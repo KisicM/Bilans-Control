@@ -1,12 +1,27 @@
 <!-- Dropzone.svelte -->
 
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, createEventDispatcher } from 'svelte';
   import * as XLSX from 'xlsx';
 
   let files: File[] = [];
   let allowedFileTypes = ['.xls', '.xlsx'];
   let isActive: boolean = false;
+  let monthsMap: any = {
+    "01": [],
+    "02": [],
+    "03": [],
+    "04": [],
+    "05": [],
+    "06": [],
+    "07": [],
+    "08": [],
+    "09": [],
+    "10": [],
+    "11": [],
+    "12": []
+  }
+  const dispatch = createEventDispatcher();
 
   function handleDrop(event: DragEvent) {
     event.preventDefault();
@@ -38,12 +53,22 @@
 
   async function processFiles() {
     for (const file of files) {
+      const month =  getMonth(file.name)
       const workbook = await readExcelFile(file);
-      const firstRow = getFirstRow(workbook);
-      console.log(`First row of ${file.name}:`, firstRow[0]);
-      console.log(`Second row of ${file.name}:`, firstRow[1]);
-      // You can perform further processing with the first row here
+      const data: Array<string> = covertToJsonArray(workbook);
+      monthsMap[month] = data
+      console.log(data[0])
+      console.log(data[1])
+      dispatch('processedData', monthsMap);
     }
+  }
+
+  function getMonth(inputString: string) {
+    const stringWithoutExtension = inputString.split('.')[0]
+    const stringArray = stringWithoutExtension.split(' ');
+    const lastElement = stringArray[stringArray.length - 1];
+    const lastTwoChars = lastElement.slice(-2);
+    return lastTwoChars;
   }
 
   async function readExcelFile(file: File): Promise<XLSX.WorkBook> {
@@ -63,11 +88,13 @@
     });
   }
 
-  function getFirstRow(workbook: XLSX.WorkBook): any[] {
+  function covertToJsonArray(workbook: XLSX.WorkBook): any[] {
     const firstSheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[firstSheetName];
     return XLSX.utils.sheet_to_json(worksheet) as any;
   }
+
+
 </script>
 
 <style>

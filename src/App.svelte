@@ -1,49 +1,78 @@
+<!-- App.svelte -->
+
+
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import logo from './assets/logo.png'
   import Dropzone from './lib/Dropzone.svelte';
+  import ReportViewer from './lib/ReportViewer.svelte';
+  let processedData: any = null;
+
+  function handleProcessedData(event: CustomEvent) {
+    processedData = event.detail;
+  }
+
 </script>
 
-<main>
+<div>
   <div>
     <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
+      <img src={logo} class="logo" alt="Vite Logo" />
     </a>
   </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Dropzone />
-    <Counter />
+  <h1>Generate report</h1>
+  <div>
+    {#if processedData}
+    <div>
+      <ReportViewer {processedData} />
+    </div>
+    {:else}
+    <div class="scroll-container">
+      <div class="card-container">
+        <div class="card">
+          <Dropzone on:processedData={handleProcessedData} />
+        </div>
+      </div>
+    </div>
+    {/if}
   </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
-</main>
+</div>
 
 <style>
   .logo {
-    height: 6em;
-    padding: 1.5em;
+    height: 8em;
     will-change: filter;
     transition: filter 300ms;
   }
+
   .logo:hover {
     filter: drop-shadow(0 0 2em #646cffaa);
   }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
+
+  .scroll-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 20px 0;
   }
-  .read-the-docs {
-    color: #888;
+
+  .card-container {
+    display: inline-flex;
+    gap: 20px;
+    justify-content: space-around;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .card {
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    color: #3498db;
+    transition: border 0.3s ease-in-out, transform 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .card:hover {
+    border-color: #2ecc71;
+    transform: scale(1.05);
   }
 </style>
