@@ -19,13 +19,14 @@
       <img src={logo} class="logo" alt="Vite Logo" />
     </a>
   </div>
-  <h1>Generate report</h1>
   <div>
     {#if processedData}
+    <h1>Processed report</h1>
     <div>
       <ReportViewer {processedData} />
     </div>
     {:else}
+    <h1>Generate report</h1>
     <div class="scroll-container">
       <div class="card-container">
         <div class="card">

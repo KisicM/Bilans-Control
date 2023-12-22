@@ -58,9 +58,9 @@
       const data: Array<string> = covertToJsonArray(workbook);
       monthsMap[month] = data
       console.log(data[0])
-      console.log(data[1])
-      dispatch('processedData', monthsMap);
+
     }
+    dispatch('processedData', monthsMap);
   }
 
   function getMonth(inputString: string) {

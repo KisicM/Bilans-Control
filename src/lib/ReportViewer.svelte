@@ -3,66 +3,75 @@
 <script lang="ts">
   export let processedData: Record<string, any[]> = {};
   import { onMount, createEventDispatcher } from 'svelte';
-  let tableScheme: {
-    "sifra": string|null,
-    "ime": string|null,
-    "psd": number|null,
-    "psp": number|null,
-    "01d": number|null,"01p": number|null,
-    "02d": number|null,"02p": number|null,
-    "03d": number|null,"03p": number|null,
-    "04d": number|null,"04p": number|null,
-    "05d": number|null,"05p": number|null,
-    "06d": number|null,"06p": number|null,
-    "07d": number|null,"07p": number|null,
-    "08d": number|null,"08p": number|null,
-    "09d": number|null,"09p": number|null,
-    "10d": number|null,"10p": number|null,
-    "11d": number|null,"11p": number|null,
-    "12d": number|null,"12p": number|null,
-    "ud": number|null,"up": number|null,
-    "saldo": number|null
-
-  } = {
-  "sifra": null,
-  "ime": null,
-  "psd": 0,
-  "psp": 0,
-  "01d": 0, "01p": 0,
-  "02d": 0, "02p": 0,
-  "03d": 0, "03p": 0,
-  "04d": 0, "04p": 0,
-  "05d": 0, "05p": 0,
-  "06d": 0, "06p": 0,
-  "07d": 0, "07p": 0,
-  "08d": 0, "08p": 0,
-  "09d": 0, "09p": 0,
-  "10d": 0, "10p": 0,
-  "11d": 0, "11p": 0,
-  "12d": 0, "12p": 0,
-  "ud": 0,
-  "up": 0,
-  "saldo": 0
+  type TableScheme = {
+    sifra: string | null;
+    ime: string | null;
+    psd: number | null;
+    psp: number | null;
+    "01d": number | null;
+    "01p": number | null;
+    "02d": number | null;
+    "02p": number | null;
+    "03d": number | null;
+    "03p": number | null;
+    "04d": number | null;
+    "04p": number | null;
+    "05d": number | null;
+    "05p": number | null;
+    "06d": number | null;
+    "06p": number | null;
+    "07d": number | null;
+    "07p": number | null;
+    "08d": number | null;
+    "08p": number | null;
+    "09d": number | null;
+    "09p": number | null;
+    "10d": number | null;
+    "10p": number | null;
+    "11d": number | null;
+    "11p": number | null;
+    "12d": number | null;
+    "12p": number | null;
+    ud: number | null;
+    up: number | null;
+    saldo: number | null;
 };
+  let tableData: TableScheme[] = []
 
-  function structureData(data: any) {
-    for (const [key, value] of data.entries()) {
-      for (const item of value) {
-        let monthKeyD = `${key}d` as keyof typeof tableScheme;
-        let monthKeyP = `${key}p` as keyof typeof tableScheme;
-        tableScheme["sifra"] = item["KONTO"]
-        tableScheme["ime"] = item["NAZIV KONTA"] != "" ? item["NAZIV KONTA"] : ""
-        tableScheme["psd"] = item["PSD"]
-        tableScheme["psp"] = item["PSP"]
-        tableScheme[monthKeyD] = item["D"]
-        tableScheme[monthKeyP] = item["P"]
-        tableScheme["ud"] = tableScheme["ud"] + item["D"]
-        tableScheme["up"] = tableScheme["up"] + item["P"]
-        tableScheme["saldo"] = tableScheme["ud"] && tableScheme["up"] ? tableScheme["ud"] - tableScheme["up"] : tableScheme["saldo"]
+
+  function structureData(data: Record<string,any[]>) {
+    for (const [key, value] of Object.entries(data)) { //for each month
+      for (const item of value) { // for each object
+        let new_row: TableScheme = {
+            sifra: null, ime: null, psd: null, psp: null,
+            '01d': null,'01p': null,'02d': null,'02p': null,
+            '03d': null,'03p': null,'04d': null,'04p': null,
+            '05d': null,'05p': null,'06d': null,'06p': null,
+            '07d': null,'07p': null,'08d': null,'08p': null,
+            '09d': null,'09p': null,'10d': null,'10p': null,
+            '11d': null,'11p': null,'12d': null,'12p': null,
+            ud: null,up: null,saldo: null
+          }
+        let monthKeyD = `${key}d` as keyof typeof new_row;
+        let monthKeyP = `${key}p` as keyof typeof new_row;
+        new_row["sifra"] = item["KONTO"]
+        new_row["ime"] = item["NAZIV KONTA"] != "" ? item["NAZIV KONTA"] : ""
+        new_row["psd"] = item["PSD"]
+        new_row["psp"] = item["PSP"]
+        new_row[monthKeyD] = item["D"]
+        new_row[monthKeyP] = item["P"]
+        new_row["ud"] = new_row["ud"] + item["D"]
+        new_row["up"] = new_row["up"] + item["P"]
+        new_row["saldo"] = new_row["ud"] && new_row["up"] ? new_row["ud"] - new_row["up"] : new_row["saldo"]
       }
     }
   }
 
+  $: {
+    console.log("Inside ReportViewer")
+    console.log(processedData)
+    structureData(processedData);
+  }
   
 </script>
 
@@ -75,6 +84,7 @@
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     animation: fadeIn 0.5s ease-in-out;
+    overflow-x: scroll;
   }
 
   th, td {
