@@ -3,6 +3,7 @@
 <script lang="ts">
   export let processedData: Record<string, any[]> = {};
   import { onMount, createEventDispatcher } from 'svelte';
+  import { decimalPrecision } from './util'
   type TableScheme = {
     sifra: string | null;
     ime: string | null;
@@ -35,34 +36,50 @@
     ud: number | null;
     up: number | null;
     saldo: number | null;
-};
-  let tableData: TableScheme[] = []
+  };
+  type TableItem = {
+    id: string,
+    value: TableScheme | null
+  }
+  let tableDataMap = new Map<string, TableScheme>();
 
 
   function structureData(data: Record<string,any[]>) {
     for (const [key, value] of Object.entries(data)) { //for each month
       for (const item of value) { // for each object
+        let id = item["KONTO"].length !== 2 ? item["KONTO"] : `0${item["KONTO"]}`;
         let new_row: TableScheme = {
-            sifra: null, ime: null, psd: null, psp: null,
-            '01d': null,'01p': null,'02d': null,'02p': null,
-            '03d': null,'03p': null,'04d': null,'04p': null,
-            '05d': null,'05p': null,'06d': null,'06p': null,
-            '07d': null,'07p': null,'08d': null,'08p': null,
-            '09d': null,'09p': null,'10d': null,'10p': null,
-            '11d': null,'11p': null,'12d': null,'12p': null,
-            ud: null,up: null,saldo: null
-          }
+              sifra: null, ime: '', psd: 0, psp: 0,
+              '01d': 0,'01p': 0,'02d': 0,'02p': 0,
+              '03d': 0,'03p': 0,'04d': 0,'04p': 0,
+              '05d': 0,'05p': 0,'06d': 0,'06p': 0,
+              '07d': 0,'07p': 0,'08d': 0,'08p': 0,
+              '09d': 0,'09p': 0,'10d': 0,'10p': 0,
+              '11d': 0,'11p': 0,'12d': 0,'12p': 0,
+              ud: 0,up: 0,saldo: 0
+            }
+        // Check if the entry already exists
+        let existingRow = tableDataMap.get(id);
         let monthKeyD = `${key}d` as keyof typeof new_row;
         let monthKeyP = `${key}p` as keyof typeof new_row;
-        new_row["sifra"] = item["KONTO"]
-        new_row["ime"] = item["NAZIV KONTA"] != "" ? item["NAZIV KONTA"] : ""
-        new_row["psd"] = item["PSD"]
-        new_row["psp"] = item["PSP"]
-        new_row[monthKeyD] = item["D"]
-        new_row[monthKeyP] = item["P"]
-        new_row["ud"] = new_row["ud"] + item["D"]
-        new_row["up"] = new_row["up"] + item["P"]
-        new_row["saldo"] = new_row["ud"] && new_row["up"] ? new_row["ud"] - new_row["up"] : new_row["saldo"]
+        if (existingRow) {
+          existingRow[monthKeyD] = item["D"]
+          existingRow[monthKeyP] = item["P"]
+          existingRow["ud"] = existingRow["ud"] + item["D"]
+          existingRow["up"] = existingRow["up"] + item["P"]
+          existingRow["saldo"] = existingRow["ud"] && existingRow["up"] ? existingRow["ud"] - existingRow["up"] : existingRow["saldo"]
+        } else {
+          new_row["sifra"] = item["KONTO"].length != 2 ? item["KONTO"] : `0${item["KONTO"]}`
+          new_row["ime"] = item["NAZIV KONTA"] != "" ? item["NAZIV KONTA"] : ""
+          new_row["psd"] = item["PSD"]
+          new_row["psp"] = item["PSP"]
+          new_row[monthKeyD] = item["D"]
+          new_row[monthKeyP] = item["P"]
+          new_row["ud"] = new_row["ud"] + item["D"]
+          new_row["up"] = new_row["up"] + item["P"]
+          new_row["saldo"] = new_row["ud"] && new_row["up"] ? new_row["ud"] - new_row["up"] : new_row["saldo"]
+          tableDataMap.set(id, new_row);
+        }
       }
     }
   }
@@ -78,9 +95,7 @@
 <style>
   table {
     width: 100%;
-    border-collapse: collapse;
     margin-top: 20px;
-    overflow: hidden;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     animation: fadeIn 0.5s ease-in-out;
@@ -91,6 +106,8 @@
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-left:1px solid #ddd;
   }
 
   th {
@@ -114,31 +131,32 @@
   }
 </style>
 
-{#if Object.keys(processedData).length > 0}
-  
-<style type="text/css">.ritz .waffle a { color: inherit; }.ritz .waffle .s1{background-color:#c9daf8;text-align:left;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s2{background-color:#ffffff;text-align:right;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s0{background-color:#c9daf8;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}</style>
-<div class="ritz grid-container" dir="ltr"><table class="waffle" cellspacing="0" cellpadding="0">
+{#if tableDataMap.size > 0}
+<style type="text/css">.ritz .waffle a { color: inherit; }.ritz .waffle .s1{background-color:#c9daf8;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s2{background-color:#ffffff;text-align:right;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s0{background-color:#c9daf8;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}</style>
+<div class="ritz grid-container" dir="ltr">
+  <table class="waffle" cellspacing="0" cellpadding="0">
+    <thead>
+      <tr>
+        <th class="s0" dir="ltr" colspan="2">Konto</th>
+        <th class="s0" dir="ltr" colspan="2">Pocetno stanje</th>
+        <th class="s0" dir="ltr" colspan="2">Januar</th>
+        <th class="s0" dir="ltr" colspan="2">Februar</th>
+        <th class="s0" dir="ltr" colspan="2">Mart</th>
+        <th class="s0" dir="ltr" colspan="2">April</th>
+        <th class="s0" dir="ltr" colspan="2">Maj</th>
+        <th class="s0" dir="ltr" colspan="2">Jun</th>
+        <th class="s0" dir="ltr" colspan="2">Jul</th>
+        <th class="s0" dir="ltr" colspan="2">Avgust</th>
+        <th class="s0" dir="ltr" colspan="2">Septembar</th>
+        <th class="s0" dir="ltr" colspan="2">Oktobar</th>
+        <th class="s0" dir="ltr" colspan="2">Novembar</th>
+        <th class="s0" dir="ltr" colspan="2">Decembar</th>
+        <th class="s0" dir="ltr" colspan="2">Ukupno</th>
+        <th class="s0" dir="ltr">Saldo</th>
+      </tr>
+    </thead>
   <tbody>
-    <tr>
-    <td class="s0" dir="ltr" colspan="2">Konto</td>
-    <td class="s0" dir="ltr" colspan="2">Pocetno stanje</td>
-    <td class="s0" dir="ltr" colspan="2">Januar</td>
-    <td class="s0" dir="ltr" colspan="2">Februar</td>
-    <td class="s0" dir="ltr" colspan="2">Mart</td>
-    <td class="s0" dir="ltr" colspan="2">April</td>
-    <td class="s0" dir="ltr" colspan="2">Maj</td>
-    <td class="s0" dir="ltr" colspan="2">Jun</td>
-    <td class="s0" dir="ltr" colspan="2">Jul</td>
-    <td class="s0" dir="ltr" colspan="2">Jul</td>
-    <td class="s0" dir="ltr" colspan="2">Avgust</td>
-    <td class="s0" dir="ltr" colspan="2">Septembar</td>
-    <td class="s0" dir="ltr" colspan="2">Oktobar</td>
-    <td class="s0" dir="ltr" colspan="2">Novembar</td>
-    <td class="s0" dir="ltr" colspan="2">Decembar</td>
-    <td class="s0" dir="ltr" colspan="2">Ukupno</td>
-    <td class="s0" dir="ltr">Saldo</td>
-  </tr>
-  <tr style="height: 20px">
+  <tr style="hheight: 20px">
     <td class="s1" dir="ltr">Sifra</td>
     <td class="s1" dir="ltr">Naziv</td>
     <td class="s1" dir="ltr">Duguje</td>
@@ -169,45 +187,43 @@
     <td class="s1" dir="ltr">Potrazuje</td>
     <td class="s1" dir="ltr">Duguje</td>
     <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s0" dir="ltr">+/-</td>
+    <td class="s1" dir="ltr">+/-</td>
   </tr>
+  {#each Array.from(tableDataMap.entries()) as [id, row]}
   <tr style="height: 20px">
-    <td class="s2" dir="ltr">23</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td class="s2" dir="ltr">{row.sifra}</td>
+    <td class="s2" dir="ltr">{row.ime != null ? row.ime : ""}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row.psd, 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row.psp, 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["01d"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["01p"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["02d"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["02p"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["03d"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["03p"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["04d"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["04p"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["05d"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["05p"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["06d"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["06p"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["07d"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["07p"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["08d"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["08p"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["09d"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["09p"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["10d"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["10p"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["11d"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["11p"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["12d"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["12p"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["ud"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["up"], 2)}</td>
+    <td class="s2" dir="ltr">{decimalPrecision.round(row["saldo"], 2)}</td>
   </tr>
+  {/each}
   </tbody>
 </table>
 </div>

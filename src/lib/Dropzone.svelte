@@ -91,7 +91,12 @@
   function covertToJsonArray(workbook: XLSX.WorkBook): any[] {
     const firstSheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[firstSheetName];
-    return XLSX.utils.sheet_to_json(worksheet) as any;
+    const jsonArray = XLSX.utils.sheet_to_json(worksheet) as any;
+    const nonEmptyRows = jsonArray.filter((row: any) => {
+    // Check if at least one property in the row has a value
+    return Object.values(row).some((value) => value !== null && value !== undefined && value !== '');
+  });
+  return nonEmptyRows;
   }
 
 
