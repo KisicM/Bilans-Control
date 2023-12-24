@@ -37,10 +37,7 @@
     up: number | null;
     saldo: number | null;
   };
-  type TableItem = {
-    id: string,
-    value: TableScheme | null
-  }
+  
   let tableDataMap = new Map<string, TableScheme>();
 
 
@@ -99,7 +96,10 @@
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     animation: fadeIn 0.5s ease-in-out;
-    overflow-x: scroll;
+  }
+  tbody {
+    background-color: #fff;
+    color: black;
   }
 
   th, td {
@@ -130,27 +130,27 @@
     }
   }
 </style>
-
+<div>
 {#if tableDataMap.size > 0}
-<style type="text/css">.ritz .waffle a { color: inherit; }.ritz .waffle .s1{background-color:#c9daf8;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s2{background-color:#ffffff;text-align:right;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s0{background-color:#c9daf8;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}</style>
-<div class="ritz grid-container" dir="ltr">
+<style type="text/css">.ritz .waffle a { color: inherit; }.ritz .waffle .s1{background-color:#c9daf8;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s2{text-align:right;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s0{text-align:center;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;}</style>
+<div class="ritz" dir="ltr">
   <table class="waffle" cellspacing="0" cellpadding="0">
     <thead>
       <tr>
         <th class="s0" dir="ltr" colspan="2">Konto</th>
         <th class="s0" dir="ltr" colspan="2">Pocetno stanje</th>
-        <th class="s0" dir="ltr" colspan="2">Januar</th>
-        <th class="s0" dir="ltr" colspan="2">Februar</th>
-        <th class="s0" dir="ltr" colspan="2">Mart</th>
-        <th class="s0" dir="ltr" colspan="2">April</th>
-        <th class="s0" dir="ltr" colspan="2">Maj</th>
-        <th class="s0" dir="ltr" colspan="2">Jun</th>
-        <th class="s0" dir="ltr" colspan="2">Jul</th>
-        <th class="s0" dir="ltr" colspan="2">Avgust</th>
-        <th class="s0" dir="ltr" colspan="2">Septembar</th>
-        <th class="s0" dir="ltr" colspan="2">Oktobar</th>
-        <th class="s0" dir="ltr" colspan="2">Novembar</th>
-        <th class="s0" dir="ltr" colspan="2">Decembar</th>
+        {#if processedData["01"].length != 0}<th class="s0" dir="ltr" colspan="2">Januar</th>{/if}
+        {#if processedData["02"].length != 0}<th class="s0" dir="ltr" colspan="2">Februar</th>{/if}
+        {#if processedData["03"].length != 0}<th class="s0" dir="ltr" colspan="2">Mart</th>{/if}
+        {#if processedData["04"].length != 0}<th class="s0" dir="ltr" colspan="2">April</th>{/if}
+        {#if processedData["05"].length != 0}<th class="s0" dir="ltr" colspan="2">Maj</th>{/if}
+        {#if processedData["06"].length != 0}<th class="s0" dir="ltr" colspan="2">Jun</th>{/if}
+        {#if processedData["07"].length != 0}<th class="s0" dir="ltr" colspan="2">Jul</th>{/if}
+        {#if processedData["08"].length != 0}<th class="s0" dir="ltr" colspan="2">Avgust</th>{/if}
+        {#if processedData["09"].length != 0}<th class="s0" dir="ltr" colspan="2">Septembar</th>{/if}
+        {#if processedData["10"].length != 0}<th class="s0" dir="ltr" colspan="2">Oktobar</th>{/if}
+        {#if processedData["11"].length != 0}<th class="s0" dir="ltr" colspan="2">Novembar</th>{/if}
+        {#if processedData["12"].length != 0}<th class="s0" dir="ltr" colspan="2">Decembar</th>{/if}
         <th class="s0" dir="ltr" colspan="2">Ukupno</th>
         <th class="s0" dir="ltr">Saldo</th>
       </tr>
@@ -161,30 +161,30 @@
     <td class="s1" dir="ltr">Naziv</td>
     <td class="s1" dir="ltr">Duguje</td>
     <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
-    <td class="s1" dir="ltr">Duguje</td>
-    <td class="s1" dir="ltr">Potrazuje</td>
+    {#if processedData["01"].length != 0}<td class="s1" dir="ltr">Duguje</td>{/if}
+    {#if processedData["01"].length != 0}<td class="s1" dir="ltr">Potrazuje</td>{/if}
+    {#if processedData["02"].length != 0}<td class="s1" dir="ltr">Duguje</td>{/if}
+    {#if processedData["02"].length != 0}<td class="s1" dir="ltr">Potrazuje</td>{/if}
+    {#if processedData["03"].length != 0}<td class="s1" dir="ltr">Duguje</td>{/if}
+    {#if processedData["03"].length != 0}<td class="s1" dir="ltr">Potrazuje</td>{/if}
+    {#if processedData["04"].length != 0}<td class="s1" dir="ltr">Duguje</td>{/if}
+    {#if processedData["04"].length != 0}<td class="s1" dir="ltr">Potrazuje</td>{/if}
+    {#if processedData["05"].length != 0}<td class="s1" dir="ltr">Duguje</td>{/if}
+    {#if processedData["05"].length != 0}<td class="s1" dir="ltr">Potrazuje</td>{/if}
+    {#if processedData["06"].length != 0}<td class="s1" dir="ltr">Duguje</td>{/if}
+    {#if processedData["06"].length != 0}<td class="s1" dir="ltr">Potrazuje</td>{/if}
+    {#if processedData["07"].length != 0}<td class="s1" dir="ltr">Duguje</td>{/if}
+    {#if processedData["07"].length != 0}<td class="s1" dir="ltr">Potrazuje</td>{/if}
+    {#if processedData["08"].length != 0}<td class="s1" dir="ltr">Duguje</td>{/if}
+    {#if processedData["08"].length != 0}<td class="s1" dir="ltr">Potrazuje</td>{/if}
+    {#if processedData["09"].length != 0}<td class="s1" dir="ltr">Duguje</td>{/if}
+    {#if processedData["09"].length != 0}<td class="s1" dir="ltr">Potrazuje</td>{/if}
+    {#if processedData["10"].length != 0}<td class="s1" dir="ltr">Duguje</td>{/if}
+    {#if processedData["10"].length != 0}<td class="s1" dir="ltr">Potrazuje</td>{/if}
+    {#if processedData["11"].length != 0}<td class="s1" dir="ltr">Duguje</td>{/if}
+    {#if processedData["11"].length != 0}<td class="s1" dir="ltr">Potrazuje</td>{/if}
+    {#if processedData["12"].length != 0}<td class="s1" dir="ltr">Duguje</td>{/if}
+    {#if processedData["12"].length != 0}<td class="s1" dir="ltr">Potrazuje</td>{/if}
     <td class="s1" dir="ltr">Duguje</td>
     <td class="s1" dir="ltr">Potrazuje</td>
     <td class="s1" dir="ltr">+/-</td>
@@ -192,33 +192,33 @@
   {#each Array.from(tableDataMap.entries()) as [id, row]}
   <tr style="height: 20px">
     <td class="s2" dir="ltr">{row.sifra}</td>
-    <td class="s2" dir="ltr">{row.ime != null ? row.ime : ""}</td>
+    <td class="s2" style="text-align: left;" dir="ltr">{row.ime != null ? row.ime : ""}</td>
     <td class="s2" dir="ltr">{decimalPrecision.round(row.psd, 2)}</td>
     <td class="s2" dir="ltr">{decimalPrecision.round(row.psp, 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["01d"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["01p"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["02d"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["02p"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["03d"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["03p"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["04d"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["04p"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["05d"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["05p"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["06d"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["06p"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["07d"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["07p"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["08d"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["08p"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["09d"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["09p"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["10d"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["10p"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["11d"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["11p"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["12d"], 2)}</td>
-    <td class="s2" dir="ltr">{decimalPrecision.round(row["12p"], 2)}</td>
+    {#if processedData["01"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["01d"], 2)}</td>{/if}
+    {#if processedData["01"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["01p"], 2)}</td>{/if}
+    {#if processedData["02"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["02d"], 2)}</td>{/if}
+    {#if processedData["02"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["02p"], 2)}</td>{/if}
+    {#if processedData["03"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["03d"], 2)}</td>{/if}
+    {#if processedData["03"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["03p"], 2)}</td>{/if}
+    {#if processedData["04"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["04d"], 2)}</td>{/if}
+    {#if processedData["04"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["04p"], 2)}</td>{/if}
+    {#if processedData["05"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["05d"], 2)}</td>{/if}
+    {#if processedData["05"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["05p"], 2)}</td>{/if}
+    {#if processedData["06"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["06d"], 2)}</td>{/if}
+    {#if processedData["06"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["06p"], 2)}</td>{/if}
+    {#if processedData["07"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["07d"], 2)}</td>{/if}
+    {#if processedData["07"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["07p"], 2)}</td>{/if}
+    {#if processedData["08"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["08d"], 2)}</td>{/if}
+    {#if processedData["08"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["08p"], 2)}</td>{/if}
+    {#if processedData["09"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["09d"], 2)}</td>{/if}
+    {#if processedData["09"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["09p"], 2)}</td>{/if}
+    {#if processedData["10"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["10d"], 2)}</td>{/if}
+    {#if processedData["10"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["10p"], 2)}</td>{/if}
+    {#if processedData["11"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["11d"], 2)}</td>{/if}
+    {#if processedData["11"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["11p"], 2)}</td>{/if}
+    {#if processedData["12"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["12d"], 2)}</td>{/if}
+    {#if processedData["12"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["12p"], 2)}</td>{/if}
     <td class="s2" dir="ltr">{decimalPrecision.round(row["ud"], 2)}</td>
     <td class="s2" dir="ltr">{decimalPrecision.round(row["up"], 2)}</td>
     <td class="s2" dir="ltr">{decimalPrecision.round(row["saldo"], 2)}</td>
@@ -230,3 +230,4 @@
 {:else}
   <p>No processed data available.</p>
 {/if}
+</div>
