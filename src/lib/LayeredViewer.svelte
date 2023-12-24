@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { TableScheme } from "./TableScheme";
-    import { convertJsonToExcel, decimalPrecision } from "./util";
+    import { convertJsonToExcel, decimalPrecision, formatNumberWithCommas } from "./util";
     export let processedData: Record<string, any[]> = {};
     export let data: Map<string, TableScheme> = new Map();
 
@@ -121,35 +121,35 @@
     <tr style="height: 20px">
       <td class="s2" dir="ltr">{row.sifra}</td>
       <td class="s2" style="text-align: left;" dir="ltr">{row.naziv != null ? row.naziv : ""}</td>
-      <td class="s2" dir="ltr">{decimalPrecision.round(row.psd, 2)}</td>
-      <td class="s2" dir="ltr">{decimalPrecision.round(row.psp, 2)}</td>
-      {#if processedData["01"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["01d"], 2)}</td>{/if}
-      {#if processedData["01"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["01p"], 2)}</td>{/if}
-      {#if processedData["02"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["02d"], 2)}</td>{/if}
-      {#if processedData["02"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["02p"], 2)}</td>{/if}
-      {#if processedData["03"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["03d"], 2)}</td>{/if}
-      {#if processedData["03"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["03p"], 2)}</td>{/if}
-      {#if processedData["04"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["04d"], 2)}</td>{/if}
-      {#if processedData["04"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["04p"], 2)}</td>{/if}
-      {#if processedData["05"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["05d"], 2)}</td>{/if}
-      {#if processedData["05"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["05p"], 2)}</td>{/if}
-      {#if processedData["06"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["06d"], 2)}</td>{/if}
-      {#if processedData["06"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["06p"], 2)}</td>{/if}
-      {#if processedData["07"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["07d"], 2)}</td>{/if}
-      {#if processedData["07"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["07p"], 2)}</td>{/if}
-      {#if processedData["08"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["08d"], 2)}</td>{/if}
-      {#if processedData["08"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["08p"], 2)}</td>{/if}
-      {#if processedData["09"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["09d"], 2)}</td>{/if}
-      {#if processedData["09"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["09p"], 2)}</td>{/if}
-      {#if processedData["10"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["10d"], 2)}</td>{/if}
-      {#if processedData["10"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["10p"], 2)}</td>{/if}
-      {#if processedData["11"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["11d"], 2)}</td>{/if}
-      {#if processedData["11"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["11p"], 2)}</td>{/if}
-      {#if processedData["12"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["12d"], 2)}</td>{/if}
-      {#if processedData["12"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["12p"], 2)}</td>{/if}
-      <td class="s2" dir="ltr">{decimalPrecision.round(row["ud"], 2)}</td>
-      <td class="s2" dir="ltr">{decimalPrecision.round(row["up"], 2)}</td>
-      <td class="s2" dir="ltr">{decimalPrecision.round(row["saldo"], 2)}</td>
+      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row.psd, 2))}</td>
+      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row.psp, 2))}</td>
+      {#if processedData["01"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["01d"], 2))}</td>{/if}
+      {#if processedData["01"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["01p"], 2))}</td>{/if}
+      {#if processedData["02"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["02d"], 2))}</td>{/if}
+      {#if processedData["02"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["02p"], 2))}</td>{/if}
+      {#if processedData["03"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["03d"], 2))}</td>{/if}
+      {#if processedData["03"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["03p"], 2))}</td>{/if}
+      {#if processedData["04"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["04d"], 2))}</td>{/if}
+      {#if processedData["04"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["04p"], 2))}</td>{/if}
+      {#if processedData["05"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["05d"], 2))}</td>{/if}
+      {#if processedData["05"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["05p"], 2))}</td>{/if}
+      {#if processedData["06"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["06d"], 2))}</td>{/if}
+      {#if processedData["06"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["06p"], 2))}</td>{/if}
+      {#if processedData["07"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["07d"], 2))}</td>{/if}
+      {#if processedData["07"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["07p"], 2))}</td>{/if}
+      {#if processedData["08"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["08d"], 2))}</td>{/if}
+      {#if processedData["08"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["08p"], 2))}</td>{/if}
+      {#if processedData["09"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["09d"], 2))}</td>{/if}
+      {#if processedData["09"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["09p"], 2))}</td>{/if}
+      {#if processedData["10"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["10d"], 2))}</td>{/if}
+      {#if processedData["10"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["10p"], 2))}</td>{/if}
+      {#if processedData["11"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["11d"], 2))}</td>{/if}
+      {#if processedData["11"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["11p"], 2))}</td>{/if}
+      {#if processedData["12"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["12d"], 2))}</td>{/if}
+      {#if processedData["12"].length != 0}<td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["12p"], 2))}</td>{/if}
+      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["ud"], 2))}</td>
+      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["up"], 2))}</td>
+      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["saldo"], 2))}</td>
     </tr>
     {/each}
     </tbody>

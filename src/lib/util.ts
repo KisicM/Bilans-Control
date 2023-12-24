@@ -55,3 +55,7 @@ export function convertJsonToExcel(data: any[], fileName: string): void {
   XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
   XLSX.writeFile(wb, fileName);
 }
+
+export function formatNumberWithCommas(number: number): string {
+  return number.toLocaleString();
+}
