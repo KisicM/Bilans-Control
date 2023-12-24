@@ -1,6 +1,6 @@
 export type TableScheme = {
     sifra: string | null;
-    ime: string | null;
+    naziv: string | null;
     psd: number | null;
     psp: number | null;
     "01d": number | null;

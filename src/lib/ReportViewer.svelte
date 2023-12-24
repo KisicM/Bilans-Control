@@ -15,7 +15,7 @@
 
   function createEmptyTableScheme(): TableScheme {
     return {
-              sifra: null, ime: '', psd: 0, psp: 0,
+              sifra: null, naziv: '', psd: 0, psp: 0,
               '01d': 0,'01p': 0,'02d': 0,'02p': 0,
               '03d': 0,'03p': 0,'04d': 0,'04p': 0,
               '05d': 0,'05p': 0,'06d': 0,'06p': 0,
@@ -43,7 +43,7 @@
           existingRow["saldo"] = existingRow["ud"] && existingRow["up"] ? existingRow["ud"] - existingRow["up"] : existingRow["saldo"]
         } else {
           new_row["sifra"] = item["KONTO"].length != 2 ? item["KONTO"] : `0${item["KONTO"]}`
-          new_row["ime"] = item["NAZIV KONTA"] != "" ? item["NAZIV KONTA"] : ""
+          new_row["naziv"] = item["NAZIV KONTA"] != "" ? item["NAZIV KONTA"] : ""
           new_row["psd"] = item["PSD"]
           new_row["psp"] = item["PSP"]
           new_row[monthKeyD] = item["D"]
@@ -87,7 +87,9 @@
 
 <style>
   /* ... existing styles ... */
-
+  .viewer {
+    margin-top: 1%;
+  }
   .viewer-container {
     overflow: auto;
     white-space: nowrap; /* Prevent table from breaking into multiple lines */
@@ -95,7 +97,13 @@
 </style>
 
 <div class="viewer-container">
-  <LayeredViewer data={layerOneValues} processedData={processedData}/>
-  <LayeredViewer data={layerTwoValues} processedData={processedData}/>
-  <LayeredViewer data={tableDataMap} processedData={processedData}/>
+  <div class="viewer-container viewer">
+    <LayeredViewer data={layerOneValues} processedData={processedData}/>
+  </div>
+  <div class="viewer-container viewer">
+    <LayeredViewer data={layerTwoValues} processedData={processedData}/>
+  </div>
+  <div class="viewer-container viewer">
+    <LayeredViewer data={tableDataMap} processedData={processedData}/>
+  </div>
 </div>

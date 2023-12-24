@@ -1,9 +1,14 @@
 <script lang="ts">
     import type { TableScheme } from "./TableScheme";
-    import { decimalPrecision } from "./util";
+    import { convertJsonToExcel, decimalPrecision } from "./util";
     export let processedData: Record<string, any[]> = {};
     export let data: Map<string, TableScheme> = new Map();
 
+    function handleExport() {
+        const dataArray = Array.from(data.values());
+        convertJsonToExcel(dataArray, "output.xlsx")
+        console.log("Exported")
+    }
 </script>
 
 <style>
@@ -48,6 +53,11 @@
       }
     }
   </style>
+  <div>
+    <button style="color: white; background-color:green" on:click={handleExport}>
+        Export to Excel
+    </button>
+  </div>
   <div style="overflow: auto;">
   {#if data.size > 0}
   <style type="text/css">.ritz .waffle a { color: inherit; }.ritz .waffle .s1{background-color:#c9daf8;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s2{text-align:right;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s0{text-align:center;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;}</style>
@@ -110,7 +120,7 @@
     {#each Array.from(data.entries()) as [id, row]}
     <tr style="height: 20px">
       <td class="s2" dir="ltr">{row.sifra}</td>
-      <td class="s2" style="text-align: left;" dir="ltr">{row.ime != null ? row.ime : ""}</td>
+      <td class="s2" style="text-align: left;" dir="ltr">{row.naziv != null ? row.naziv : ""}</td>
       <td class="s2" dir="ltr">{decimalPrecision.round(row.psd, 2)}</td>
       <td class="s2" dir="ltr">{decimalPrecision.round(row.psp, 2)}</td>
       {#if processedData["01"].length != 0}<td class="s2" dir="ltr">{decimalPrecision.round(row["01d"], 2)}</td>{/if}
