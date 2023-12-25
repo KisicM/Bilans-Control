@@ -8,6 +8,7 @@
   let allowedFileTypes = ['.xls', '.xlsx'];
   let isActive: boolean = false;
   let monthsMap: any = {
+    "ps": [],
     "01": [],
     "02": [],
     "03": [],
@@ -68,7 +69,7 @@
     const stringArray = stringWithoutExtension.split(' ');
     const lastElement = stringArray[stringArray.length - 1];
     const lastTwoChars = lastElement.slice(-2);
-    return lastTwoChars;
+    return lastTwoChars.toLowerCase();
   }
 
   async function readExcelFile(file: File): Promise<XLSX.WorkBook> {

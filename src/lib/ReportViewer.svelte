@@ -28,6 +28,7 @@
 
   function structureData(data: Record<string,any[]>) {
     for (const [key, value] of Object.entries(data)) { //for each month
+      if (key == "ps") continue
       for (const item of value) { // for each object
         let id = item["KONTO"].length !== 2 ? String(item["KONTO"]) : `0${item["KONTO"]}`;
         let new_row: TableScheme = createEmptyTableScheme()
@@ -44,8 +45,8 @@
         } else {
           new_row["sifra"] = item["KONTO"].length != 2 ? item["KONTO"] : `0${item["KONTO"]}`
           new_row["naziv"] = item["NAZIV KONTA"] != "" ? item["NAZIV KONTA"] : ""
-          new_row["psd"] = item["PSD"]
-          new_row["psp"] = item["PSP"]
+          new_row["psd"] = getInitialValue(item["KONTO"], "PSD")
+          new_row["psp"] = getInitialValue(item["KONTO"], "PSP")
           new_row[monthKeyD] = item["D"]
           new_row[monthKeyP] = item["P"]
           new_row["ud"] = new_row["ud"] + item["D"]
@@ -55,6 +56,17 @@
         }
       }
     }
+  }
+
+  function getInitialValue(key: string, valueToGet: string): number {
+    let result = 0
+    processedData["ps"].forEach(element => {
+      if (element["KONTO"] == key) {
+        result = element[valueToGet] as number
+        return
+      }
+    });
+    return result
   }
 
   function calculateLayer(layerNumber: number): Map<string, TableScheme> {
