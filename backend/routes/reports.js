@@ -14,11 +14,10 @@ router.get('/', function(req, res, next) {
 const createCollectionMiddleware = async (req, res, next) => {
   try {
     // Extract the collection name from the request body
-    const { collectionName } = req.body;
-    const { data } = req.body;
+    const { collectionName, data, fieldsToUpdate } = req.body;
 
-    if (!collectionName || !data) {
-      return res.status(400).json({ success: false, message: 'collectionName and data properties are required in the request body' });
+    if (!collectionName || !data || !fieldsToUpdate) {
+      return res.status(400).json({ success: false, message: 'Missing required properties in the request body' });
     }
 
     // Connect to MongoDB
@@ -49,15 +48,56 @@ const createCollectionMiddleware = async (req, res, next) => {
 router.use(createCollectionMiddleware);
 
 router.post('/', async (req, res) => {
+  fieldsMap = {
+    "ps": {"psp": 0, "psd": 0},
+    "01": {"01p": 0, "01d": 0},
+    "02": {"02p": 0, "02d": 0},
+    "03": {"03p": 0, "03d": 0},
+    "04": {"04p": 0, "04d": 0},
+    "05": {"05p": 0, "05d": 0},
+    "06": {"06p": 0, "06d": 0},
+    "07": {"07p": 0, "07d": 0},
+    "08": {"08p": 0, "08d": 0},
+    "09": {"09p": 0, "09d": 0},
+    "10": {"10p": 0, "10d": 0},
+    "11": {"11p": 0, "11d": 0},
+    "12": {"12p": 0, "12d": 0},
+  }
   try {
-    const { collectionName, data } = req.body;
+    const { collectionName, data, fieldsToUpdate } = req.body;
     const client = await MongoClient.connect(mongoUrl);
     const db = client.db(dbName);
-    const collection = db.collection(collectionName);
+    const collection = db.collection(collectionName.split(" ")[0]);
 
-    const options = { ordered: true };
-    // Insert the data into the collection
-    const result = await collection.insertMany(data, options);
+    const bulkOperations = data.map((item) => {
+      // Find the existing document based on the 'sifra' field
+      const filter = { sifra: item.sifra };
+    
+      // Prepare an update object based on the fieldsToUpdate map
+      const updateFields = {};
+      Object.keys(fieldsToUpdate).forEach((key) => {
+        if (fieldsToUpdate[key]) {
+          mapValue = fieldsMap[key]
+          Object.keys(mapValue).forEach((property) => {
+            updateFields[property] = item[property];
+          })
+        }
+      });
+    
+      // Create an update operation with upsert: true
+      const updateOperation = {
+        updateOne: {
+          filter,
+          update: { $set: updateFields },
+          upsert: true,
+        },
+      };
+    
+      return updateOperation;
+    });
+    
+    // Execute the bulk write operation
+    const result = await collection.bulkWrite(bulkOperations);
 
     // Close the MongoDB connection
     client.close();
@@ -66,7 +106,8 @@ router.post('/', async (req, res) => {
     res.json({ 
       success: true, 
       message: 'Data saved successfully',
-      count: result.insertedCount
+      countInserted: result.nInserted,
+      countUpdated: result.nUpserted
     });
   } catch (error) {
     console.error('Error saving data:', error);

@@ -6,9 +6,14 @@
   import Dropzone from './lib/Dropzone.svelte';
   import ReportViewer from './lib/ReportViewer.svelte';
   let processedData: any = null;
+  let fileName: string = "collection"
 
   function handleProcessedData(event: CustomEvent) {
     processedData = event.detail;
+  }
+
+  function handleFileName(event: CustomEvent) {
+    fileName = event.detail
   }
 
 </script>
@@ -23,14 +28,14 @@
     {#if processedData}
     <h1>Processed report</h1>
     <div>
-      <ReportViewer {processedData} />
+      <ReportViewer processedData={processedData} fileName={fileName} />
     </div>
     {:else}
     <h1>Generate report</h1>
     <div class="scroll-container">
       <div class="card-container">
         <div class="card">
-          <Dropzone on:processedData={handleProcessedData} />
+          <Dropzone on:processedData={handleProcessedData} on:emitFileName={handleFileName} />
         </div>
       </div>
     </div>

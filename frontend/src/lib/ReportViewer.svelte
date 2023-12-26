@@ -2,6 +2,7 @@
 
 <script lang="ts">
   export let processedData: Record<string, any[]> = {};
+  export let fileName: string = "collection"
   import { onMount, createEventDispatcher } from 'svelte';
   import { decimalPrecision } from './util'
   import LayeredViewer from './LayeredViewer.svelte';
@@ -88,6 +89,8 @@
   $: {
     console.log("Inside ReportViewer")
     console.log(processedData)
+    console.log(fileName)
+    fileName = fileName
     structureData(processedData);
     layerTwoValues=calculateLayer(2);
     layerOneValues=calculateLayer(1);
@@ -108,12 +111,12 @@
 
 <div class="viewer-container">
   <div class="viewer-container viewer">
-    <LayeredViewer data={layerOneValues} processedData={processedData}/>
+    <LayeredViewer data={layerOneValues} processedData={processedData} fileName={fileName}/>
   </div>
   <div class="viewer-container viewer">
-    <LayeredViewer data={layerTwoValues} processedData={processedData}/>
+    <LayeredViewer data={layerTwoValues} processedData={processedData} fileName={fileName}/>
   </div>
   <div class="viewer-container viewer">
-    <LayeredViewer data={tableDataMap} processedData={processedData}/>
+    <LayeredViewer data={tableDataMap} processedData={processedData} fileName={fileName}/>
   </div>
 </div>

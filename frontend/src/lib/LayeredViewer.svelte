@@ -4,6 +4,7 @@
     import { postData } from "../services/reports"
     export let processedData: Record<string, any[]> = {};
     export let data: Map<string, TableScheme> = new Map();
+    export let fileName: string = ""
 
     function handleExport() {
         const dataArray = Array.from(data.values());
@@ -13,7 +14,11 @@
 
     const handleClick = async () => {
       const dataArray = Array.from(data.values());
-      const postDataPayload = { collectionName: "ling", data:dataArray };
+      let fieldsToUpdate: Record<string, boolean> = {}
+      for (const [key, value] of Object.entries(processedData)) {
+        fieldsToUpdate[key] = value.length !== 0
+      }
+      const postDataPayload = { collectionName: fileName, data:dataArray, fieldsToUpdate:fieldsToUpdate };
       try {
         let postDataResult = await postData("reports", postDataPayload);
         console.log(postDataResult)
