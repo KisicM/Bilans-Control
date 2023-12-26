@@ -72,8 +72,6 @@
   function calculateLayer(layerNumber: number): Map<string, TableScheme> {
     const result: Map<string, TableScheme> = new Map();
       Array.from(tableDataMap.entries()).forEach(([key, value]) => {
-        console.log(key)
-        console.log(value)
         const prefix = key.substring(0, layerNumber);
         const existingRow = result.get(prefix) || createEmptyTableScheme();
         existingRow.sifra = prefix

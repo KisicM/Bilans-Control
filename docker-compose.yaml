@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # MongoDB container
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    environment:
+      MONGO_INITDB_DATABASE: reports
+
+  # MongoDB client container (mongo-express)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8081"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Node.js/Express server container
+  node-app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile # Your Dockerfile for the Node.js app
+    container_name: node-app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - mongodb
+
+  svelte-app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile # Your Dockerfile for the Node.js app
+    container_name: svelte-app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+
+volumes:
+  mongodb_data:
+  backend:
+  frontend:

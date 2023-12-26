@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { TableScheme } from "./TableScheme";
     import { convertJsonToExcel, decimalPrecision, formatNumberWithCommas } from "./util";
+    import { postData } from "../services/reports"
     export let processedData: Record<string, any[]> = {};
     export let data: Map<string, TableScheme> = new Map();
 
@@ -9,6 +10,17 @@
         convertJsonToExcel(dataArray, "output.xlsx")
         console.log("Exported")
     }
+
+    const handleClick = async () => {
+      const dataArray = Array.from(data.values());
+      const postDataPayload = { collectionName: "ling", data:dataArray };
+      try {
+        let postDataResult = await postData("reports", postDataPayload);
+        console.log(postDataResult)
+      } catch (error) {
+        console.error('Error posting data:', error);
+      }
+    };
 </script>
 
 <style>
@@ -56,6 +68,9 @@
   <div>
     <button style="color: white; background-color:green" on:click={handleExport}>
         Export to Excel
+    </button>
+    <button style="color: white; background-color:blue" on:click={handleClick}>
+        Save report
     </button>
   </div>
   <div style="overflow: auto;">
