@@ -1,24 +1,93 @@
 var express = require('express');
 var router = express.Router();
+const roundNumber = require("../util/decimalPrecision")
 const MongoClient = require('mongodb').MongoClient;
-
 const mongoUrl = 'mongodb://mongodb:27017';
 const dbName = 'reports';
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send(`respond with a ${req}`);
+/* GET all collections. */
+router.get('/', async function(req, res, next) {
+  try {
+    // Connect to MongoDB
+    const client = await MongoClient.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+    const db = client.db(dbName);
+
+    // Get a list of collection names
+    const collections = await db.listCollections().toArray();
+    const collectionNames = collections.map(collection => collection.name);
+
+    // Close the MongoDB connection
+    client.close();
+
+    // Respond with the list of collection names
+    res.json({ collections: collectionNames });
+  } catch (error) {
+    console.error('Error fetching collection names:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
+
+router.get('/:id', async (req, res, next) => {
+  try {
+    // Connect to MongoDB
+    const client = await MongoClient.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+    const db = client.db(dbName);
+
+    // Get the collection name from the path parameter
+    const collectionName = req.params.id;
+
+    // Check if the collection exists
+    const collectionExists = await db.listCollections({ name: collectionName }).hasNext();
+
+    if (!collectionExists) {
+      // If the collection doesn't exist, return a 404 response
+      res.status(404).json({ error: 'Report not found' });
+      return;
+    }
+    // Retrieve all items from the specified collection
+    const items = await db.collection(collectionName).find({}).toArray();
+
+    const processedItems = await Promise.all(items.map(async (item) => {
+      let ud = 0;
+      let up = 0;
+      for (const key of Object.keys(item)) {
+        if (["ud", "up", "_id"].includes(key)) continue
+        if (key.endsWith('d'))
+          ud += item[key];
+        if (key.endsWith('p') && key !== 'up')
+          up += item[key];
+      }
+      let saldo = ud - up;
+      ud = roundNumber(ud, 2);
+      up = roundNumber(up, 2);
+      saldo = roundNumber(saldo, 2);
+      await db.collection(collectionName).updateOne({ _id: item._id }, { $set: { ud, up, saldo } });
+      return {...item, ud:roundNumber(ud, 2), up:roundNumber(up,2), saldo: roundNumber(saldo, 2)}
+    }));
+
+    // Close the MongoDB connection
+    client.close();
+
+    // Respond with the items
+    res.json({ report: processedItems });
+  } catch (error) {
+    console.error('Error fetching items:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 // Middleware to create the collection if it doesn't exist
 const createCollectionMiddleware = async (req, res, next) => {
   try {
     // Extract the collection name from the request body
-    const { collectionName, data, fieldsToUpdate } = req.body;
+    let { collectionName, data, fieldsToUpdate } = req.body;
 
     if (!collectionName || !data || !fieldsToUpdate) {
       return res.status(400).json({ success: false, message: 'Missing required properties in the request body' });
     }
+
+    collectionName = collectionName.split(" ")[0]
 
     // Connect to MongoDB
     const client = await MongoClient.connect(mongoUrl);
@@ -44,10 +113,8 @@ const createCollectionMiddleware = async (req, res, next) => {
   }
 };
 
-// Apply the createCollectionMiddleware for all routes in this router
-router.use(createCollectionMiddleware);
 
-router.post('/', async (req, res) => {
+router.post('/', createCollectionMiddleware, async (req, res) => {
   fieldsMap = {
     "ps": {"psp": 0, "psd": 0},
     "01": {"01p": 0, "01d": 0},

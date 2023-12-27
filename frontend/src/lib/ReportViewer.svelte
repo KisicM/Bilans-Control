@@ -44,7 +44,7 @@
           existingRow["up"] = existingRow["up"] + item["P"]
           existingRow["saldo"] = existingRow["ud"] && existingRow["up"] ? existingRow["ud"] - existingRow["up"] : existingRow["saldo"]
         } else {
-          new_row["sifra"] = item["KONTO"].length != 2 ? item["KONTO"] : `0${item["KONTO"]}`
+          new_row["sifra"] = item["KONTO"].length != 2 ? String(item["KONTO"]) : `0${item["KONTO"]}`
           new_row["naziv"] = item["NAZIV KONTA"] != "" ? item["NAZIV KONTA"] : ""
           new_row["psd"] = getInitialValue(item["KONTO"], "PSD")
           new_row["psp"] = getInitialValue(item["KONTO"], "PSP")
@@ -62,7 +62,7 @@
   function getInitialValue(key: string, valueToGet: string): number {
     let result = 0
     processedData["ps"].forEach(element => {
-      if (element["KONTO"] == key) {
+      if (String(element["KONTO"]) == key) {
         result = element[valueToGet] as number
         return
       }
