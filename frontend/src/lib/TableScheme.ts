@@ -32,3 +32,10 @@ export type TableScheme = {
     saldo: number | null;
     [key: string]: string | number | null;
   };
+
+  export type ReportSavedResponse = {
+    message: string;
+    success: boolean;
+    countInserted: number | null;
+    countUpdated: number | null;
+  }

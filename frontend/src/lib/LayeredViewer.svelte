@@ -1,7 +1,8 @@
 <script lang="ts">
-    import type { TableScheme } from "./TableScheme";
+    import type { ReportSavedResponse, TableScheme } from "./TableScheme";
     import { convertJsonToExcel, decimalPrecision, formatNumberWithCommas } from "./util";
     import { postData } from "../services/reports"
+    import toastr from 'toastr';
     export let processedData: Record<string, any[]> = {};
     export let data: Map<string, TableScheme> = new Map();
     export let fileName: string = ""
@@ -10,6 +11,7 @@
         const dataArray = Array.from(data.values());
         convertJsonToExcel(dataArray, "output.xlsx")
         console.log("Exported")
+        toastr.success("Data exported successfully")
     }
 
     const handleClick = async () => {
@@ -20,12 +22,18 @@
       }
       const postDataPayload = { collectionName: fileName, data:dataArray, fieldsToUpdate:fieldsToUpdate };
       try {
-        let postDataResult = await postData("reports", postDataPayload);
+        let postDataResult: ReportSavedResponse = await postData("reports", postDataPayload);
         console.log(postDataResult)
+        if (postDataResult.success) {
+          toastr.success('Data saved successfully!')
+        } else {
+          toastr.error('Failed to save data.');
+        }
       } catch (error) {
         console.error('Error posting data:', error);
+        toastr.error('An error occurred while saving data.');
       }
-    };
+    }
 </script>
 
 <style>

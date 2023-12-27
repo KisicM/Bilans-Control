@@ -50,8 +50,8 @@
           new_row["psp"] = getInitialValue(item["KONTO"], "PSP")
           new_row[monthKeyD] = item["D"]
           new_row[monthKeyP] = item["P"]
-          new_row["ud"] = new_row["ud"] + item["D"]
-          new_row["up"] = new_row["up"] + item["P"]
+          new_row["ud"] = new_row["psd"] + item["D"]
+          new_row["up"] = new_row["psp"] + item["P"]
           new_row["saldo"] = new_row["ud"] && new_row["up"] ? new_row["ud"] - new_row["up"] : new_row["saldo"]
           tableDataMap.set(id, new_row);
         }

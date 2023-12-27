@@ -5,8 +5,14 @@
   import logo from './assets/logo.png'
   import Dropzone from './lib/Dropzone.svelte';
   import ReportViewer from './lib/ReportViewer.svelte';
+  import 'toastr/build/toastr.css'
   let processedData: any = null;
   let fileName: string = "collection"
+
+  import toastr from 'toastr';
+    toastr.options = {
+      // customize toastr options if needed
+    };
 
   function handleProcessedData(event: CustomEvent) {
     processedData = event.detail;
