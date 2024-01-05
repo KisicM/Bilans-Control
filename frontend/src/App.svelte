@@ -2,9 +2,11 @@
 
 
 <script lang="ts">
+  import { Router, Link, Route } from "svelte-routing";
   import logo from './assets/logo.png'
   import Dropzone from './lib/Dropzone.svelte';
   import ReportViewer from './lib/ReportViewer.svelte';
+  import Reports from './lib/Reports.svelte'
   import 'toastr/build/toastr.css'
   let processedData: any = null;
   let fileName: string = "collection"
@@ -26,27 +28,36 @@
 
 <div>
   <div>
-    <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
+    <a href="/Bilans-Control" target="_blank" rel="noreferrer">
       <img src={logo} class="logo" alt="Vite Logo" />
     </a>
   </div>
-  <div>
-    {#if processedData}
-    <h1>Processed report</h1>
-    <div>
-      <ReportViewer processedData={processedData} fileName={fileName} />
-    </div>
-    {:else}
-    <h1>Generate report</h1>
-    <div class="scroll-container">
-      <div class="card-container">
-        <div class="card">
-          <Dropzone on:processedData={handleProcessedData} on:emitFileName={handleFileName} />
+  <Router>
+    <nav>
+      <Link to="/Bilans-Control/">Home</Link>
+      <Link to="/Bilans-Control/reports">Reports</Link>
+    </nav>
+    <Route path="/Bilans-Control/">
+      <div>
+        {#if processedData}
+        <h1>Processed report</h1>
+        <div>
+          <ReportViewer processedData={processedData} fileName={fileName} />
         </div>
+        {:else}
+        <h1>Generate report</h1>
+        <div class="scroll-container">
+          <div class="card-container">
+            <div class="card">
+              <Dropzone on:processedData={handleProcessedData} on:emitFileName={handleFileName} />
+            </div>
+          </div>
+        </div>
+        {/if}
       </div>
-    </div>
-    {/if}
-  </div>
+    </Route>
+    <Route path="/Bilans-Control/reports" component={Reports} />
+  </Router>
 </div>
 
 <style>
