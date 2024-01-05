@@ -20,6 +20,7 @@
       for (const [key, value] of Object.entries(processedData)) {
         fieldsToUpdate[key] = value.length !== 0
       }
+      fieldsToUpdate["naziv"] = true
       const postDataPayload = { collectionName: fileName, data:dataArray, fieldsToUpdate:fieldsToUpdate };
       try {
         let postDataResult: ReportSavedResponse = await postData("reports", postDataPayload);

@@ -116,6 +116,7 @@ const createCollectionMiddleware = async (req, res, next) => {
 
 router.post('/', createCollectionMiddleware, async (req, res) => {
   fieldsMap = {
+    "naziv": {"naziv": ""},
     "ps": {"psp": 0, "psd": 0},
     "01": {"01p": 0, "01d": 0},
     "02": {"02p": 0, "02d": 0},
