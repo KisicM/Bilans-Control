@@ -7,7 +7,6 @@
   import { decimalPrecision } from './util'
   import LayeredViewer from './LayeredViewer.svelte';
   import type { TableScheme } from './TableScheme';
-    import { fade } from 'svelte/transition';
   
   let tableDataMap = new Map<string, TableScheme>();
   let layerOneValues = new Map<string, TableScheme>();
@@ -16,7 +15,7 @@
 
   function createEmptyTableScheme(): TableScheme {
     return {
-              sifra: null, naziv: '', psd: 0, psp: 0,
+              sifra: '', naziv: '', psd: 0, psp: 0,
               '01d': 0,'01p': 0,'02d': 0,'02p': 0,
               '03d': 0,'03p': 0,'04d': 0,'04p': 0,
               '05d': 0,'05p': 0,'06d': 0,'06p': 0,
@@ -77,9 +76,9 @@
         const existingRow = result.get(prefix) || createEmptyTableScheme();
         existingRow.sifra = prefix
         for (const field in existingRow) {
-            if (typeof existingRow[field] === 'number') {
-                (existingRow[field]as number) += (value[field] as number) || 0;
-            }
+          if (typeof existingRow[field] === 'number') {
+              (existingRow[field]as number) += (value[field] as number) || 0;
+          }
         }
         result.set(prefix, existingRow)
     });
@@ -117,6 +116,6 @@
     <LayeredViewer data={layerTwoValues} processedData={processedData} fileName={fileName}/>
   </div>
   <div class="viewer-container viewer">
-    <LayeredViewer data={tableDataMap} processedData={processedData} fileName={fileName}/>
+    <LayeredViewer data={tableDataMap} processedData={processedData} fileName={fileName} canSave={true}/>
   </div>
 </div>

@@ -3,117 +3,161 @@
     import type { TableScheme } from "./TableScheme";
     import { decimalPrecision, formatNumberWithCommas } from "./util";
     
-    export let processedData: Array<TableScheme> = new Array()
-    export let fileName: string = ''
+    export let processedData: Array<TableScheme>= []
+    export let fileName: string = ""
+    let categorizedData: Map<string, Array<TableScheme>> = new Map<string, TableScheme[]>();
+
+    type ColumnExistType = {
+      [K in keyof TableScheme]: boolean;
+    };
+
+    let columnExistMap: ColumnExistType = {
+      "sifra": true, "naziv": true, "psd": false, "psp": false, 
+      "01d": false, "01p": false, "02d": false, "02p": false,
+      "03d": false, "03p": false, "04d": false, "04p": false,
+      "05d": false, "05p": false, "06d": false, "06p": false,
+      "07d": false, "07p": false, "08d": false, "08p": false,
+      "09d": false, "09p": false, "10d": false, "10p": false,
+      "11d": false, "11p": false, "12d": false, "12p": false,
+      "ud": true, "up": true, "saldo": true
+    }
     
     onMount(async () => {
         console.log(fileName)
     });
 
+    function getHeaders(columnMap: Record<string, boolean>): string[] {
+      const monthsMap: any = {
+        "ps": "Pocetno stanje",
+        "1": "Januar",
+        "2": "Februar",
+        "3": "Mart",
+        "4": "April",
+        "5": "Maj",
+        "6": "Jun",
+        "7": "Jul",
+        "8": "Avgust",
+        "9": "Septembar",
+        "10": "Oktobar",
+        "11": "Novembar",
+        "12": "Decembar"
+      }
+      let headers: string[] = [];
+      if (columnMap["psd"] && columnMap["psp"]) {
+          headers.push("Pocetno stanje");
+        }
+      for (let i = 1; i <= 12; i++) {
+        const keyD = i >= 1 && i <= 9 ? `0${i}d` : `${i}d`;
+        const keyP = i >= 1 && i <= 9 ? `0${i}p` : `${i}p`;
+        if (columnMap[keyD] && columnMap[keyP]) {
+          headers.push(monthsMap[i]);
+        }
+      }
+      return headers
+    }
+
+    function getColumns(columnMap: Record<string, boolean>): string[] {
+      return Object.keys(columnMap).filter(column => {
+        if (column !== "sifra" && column !== "naziv" && column !== "saldo" && column.endsWith('p')) {
+          if (columnMap[column]) {
+            return column
+          }
+        }
+      });
+    }
+
+    function getValues(columnMap: Record<string, boolean>): string[] {
+      return Object.keys(columnMap).filter(column => {
+        if (columnMap[column]) {
+          return column
+        }
+      });
+    }
+
+    function updateColumnMap(item: TableScheme) {
+      if (item) {
+        Object.keys(columnExistMap).forEach((key: string) => {
+            columnExistMap[key] = item.hasOwnProperty(key as keyof TableScheme);
+        })
+      }
+    }
+
+    async function onProcessedDataChange(data: TableScheme[]) {
+      updateColumnMap(processedData[0])
+      data.forEach(item => {
+        const sifraLength = item.sifra.length.toString();
+        if (!categorizedData.has(sifraLength)) {
+          categorizedData.set(sifraLength, []);
+        }
+        const categoryArray = categorizedData.get(sifraLength);
+        if (categoryArray) {
+          categoryArray.push(item);
+        }
+      });
+    }
+
+    function sortEntriesByNumericKey(entries: any) {
+      return entries.sort(([keyA]: [string, Array<TableScheme>], [keyB]: [string, Array<TableScheme>]) => parseInt(keyA) - parseInt(keyB));
+    }
+
+    $: onProcessedDataChange(processedData);
 </script>
 
-<div>
-    {#if processedData.length > 0}
-  <style type="text/css">.ritz .waffle a { color: inherit; }.ritz .waffle .s1{background-color:#c9daf8;text-align:center;color:#000000;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s2{text-align:right;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s0{text-align:center;font-family:'Arial';font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;}</style>
-  <div class="ritz" dir="ltr">
-    <table class="waffle" cellspacing="0" cellpadding="0">
-      <thead>
-        <tr>
-          <th class="s0" dir="ltr" colspan="2">Konto</th>
-          <th class="s0" dir="ltr" colspan="2">Pocetno stanje</th>
-          <th class="s0" dir="ltr" colspan="2">Januar</th>
-          <th class="s0" dir="ltr" colspan="2">Februar</th>
-          <th class="s0" dir="ltr" colspan="2">Mart</th>
-          <th class="s0" dir="ltr" colspan="2">April</th>
-          <th class="s0" dir="ltr" colspan="2">Maj</th>
-          <th class="s0" dir="ltr" colspan="2">Jun</th>
-          <th class="s0" dir="ltr" colspan="2">Jul</th>
-          <th class="s0" dir="ltr" colspan="2">Avgust</th>
-          <th class="s0" dir="ltr" colspan="2">Septembar</th>
-          <th class="s0" dir="ltr" colspan="2">Oktobar</th>
-          <th class="s0" dir="ltr" colspan="2">Novembar</th>
-        <th class="s0" dir="ltr" colspan="2">Decembar</th>
-          <th class="s0" dir="ltr" colspan="2">Ukupno</th>
-          <th class="s0" dir="ltr">Saldo</th>
-        </tr>
-      </thead>
-    <tbody>
-    <tr style="hheight: 20px">
-      <td class="s1" dir="ltr">Sifra</td>
-      <td class="s1" dir="ltr">Naziv</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">Duguje</td>
-      <td class="s1" dir="ltr">Potrazuje</td>
-      <td class="s1" dir="ltr">+/-</td>
-    </tr>
-    {#each processedData as row}
-    <tr style="height: 20px">
-      <td class="s2" dir="ltr">{row.sifra}</td>
-      <td class="s2" style="text-align: left;" dir="ltr">{row.naziv != null ? row.naziv : ""}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row.psd, 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row.psp, 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["01d"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["01p"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["02d"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["02p"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["03d"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["03p"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["04d"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["04p"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["05d"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["05p"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["06d"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["06p"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["07d"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["07p"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["08d"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["08p"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["09d"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["09p"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["10d"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["10p"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["11d"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["11p"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["12d"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["12p"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["ud"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["up"], 2))}</td>
-      <td class="s2" dir="ltr">{formatNumberWithCommas(decimalPrecision.round(row["saldo"], 2))}</td>
-    </tr>
-    {/each}
-    </tbody>
-  </table>
-  </div>
-  {:else}
-    <p>No processed data available.</p>
-  {/if}
 
-</div>
+{#each sortEntriesByNumericKey([...categorizedData.entries()]) as [key, categoryData]}
+  <div>
+    {#if categoryData.length > 0}
+      <style type="text/css">
+        .ritz .waffle a { color: inherit; }
+        .ritz .waffle .s1 { background-color: #c9daf8; text-align: center; color: #000000; font-family: 'Arial'; font-size: 10pt; vertical-align: bottom; white-space: nowrap; direction: ltr; padding: 2px 3px 2px 3px; }
+        .ritz .waffle .s2 { text-align: right; font-family: 'Arial'; font-size: 10pt; vertical-align: bottom; white-space: nowrap; direction: ltr; padding: 2px 3px 2px 3px; }
+        .ritz .waffle .s0 { text-align: center; font-family: 'Arial'; font-size: 10pt; vertical-align: bottom; white-space: nowrap; direction: ltr; }
+      </style>
+      <div class="ritz" dir="ltr">
+        <table class="waffle" cellspacing="0" cellpadding="0">
+          <thead>
+            <tr>
+              <th class="s0" dir="ltr" colspan="2">Konto</th>
+              {#each getHeaders(columnExistMap) as header}
+                <th class="s0" dir="ltr" colspan="2">{header}</th>
+              {/each}
+              <th class="s0" dir="ltr" colspan="2">Ukupno</th>
+              <th class="s0" dir="ltr">Saldo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="height: 20px">
+              <td class="s1" dir="ltr">Sifra</td>
+              <td class="s1" dir="ltr">Naziv</td>
+              {#each getColumns(columnExistMap) as _}
+                <td class="s1" dir="ltr">Duguje</td>
+                <td class="s1" dir="ltr">Potrazuje</td>
+              {/each}
+              <td class="s1" dir="ltr">+/-</td>
+            </tr>
+            {#each categoryData as row}
+              <tr style="height: 20px">
+                {#each getValues(columnExistMap) as columnName}
+                  <td class="s2" dir="ltr">
+                    {#if typeof row[columnName] !== 'string'}
+                      {row[columnName] != null ? formatNumberWithCommas(decimalPrecision.round(row[columnName], 2)) : 0}
+                    {:else}
+                      {row[columnName] == null ? '' : row[columnName]}
+                    {/if}
+                  </td>
+                {/each}
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    {:else}
+      <p>No processed data available for sifra length {length}.</p>
+    {/if}
+  </div>
+{/each}
+
+
 <style>
     table {
       width: 100%;

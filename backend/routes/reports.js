@@ -62,19 +62,58 @@ router.get('/:id', async (req, res, next) => {
       up = roundNumber(up, 2);
       saldo = roundNumber(saldo, 2);
       await db.collection(collectionName).updateOne({ _id: item._id }, { $set: { ud, up, saldo } });
-      return {...item, ud:roundNumber(ud, 2), up:roundNumber(up,2), saldo: roundNumber(saldo, 2)}
+      return {...item, ud:roundNumber(ud, 2), up:roundNumber(up,2), saldo: roundNumber(saldo, 2), naziv: item.naziv == null ? "" : item.naziv}
     }));
 
     // Close the MongoDB connection
     client.close();
 
-    // Respond with the items
-    res.json({ report: processedItems });
+    let [singleDigitKonto, doubleDigitKonto] = await Promise.all([calculateCategorizedData(processedItems, 1), calculateCategorizedData(processedItems, 2)]);
+
+    res.json({ report: {
+      "singleDigitKonto": singleDigitKonto,
+      "doubleDigitKonto": doubleDigitKonto,
+      "tripleDigitKonto": processedItems 
+    }});
   } catch (error) {
     console.error('Error fetching items:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+function createEmptyTableScheme() {
+  return {
+            sifra: '', naziv: '', psd: 0, psp: 0,
+            '01d': 0,'01p': 0,'02d': 0,'02p': 0,
+            '03d': 0,'03p': 0,'04d': 0,'04p': 0,
+            '05d': 0,'05p': 0,'06d': 0,'06p': 0,
+            '07d': 0,'07p': 0,'08d': 0,'08p': 0,
+            '09d': 0,'09p': 0,'10d': 0,'10p': 0,
+            '11d': 0,'11p': 0,'12d': 0,'12p': 0,
+            ud: 0,up: 0,saldo: 0
+          }
+}
+
+const calculateCategorizedData = async (data, layerNumber) => {
+  const result = new Map();
+
+  for (const item of data) {
+    const prefix = item.sifra.substring(0, layerNumber);
+    let existingItem = result.get(prefix) || {}
+    existingItem["sifra"] = prefix
+    existingItem["naziv"] = ""
+    for (const field in item) {
+      if (typeof item[field] === 'number') {
+        if (!existingItem[field]) {
+          existingItem[field] = 0
+        }
+        existingItem[field] += item[field]
+      }
+    }
+    result.set(prefix, existingItem)
+  }
+  return Array.from(result.values())
+}
 
 
 // Middleware to create the collection if it doesn't exist

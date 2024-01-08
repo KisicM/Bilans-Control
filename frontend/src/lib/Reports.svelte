@@ -4,12 +4,22 @@
   import { onMount } from 'svelte';
   import toastr from 'toastr';
   import { fetchData } from '../services/reports';
-    import TableViewer from './TableViewer.svelte';
-    import type { TableScheme } from './TableScheme';
+  import TableViewer from './TableViewer.svelte';
+  import type { TableScheme } from './TableScheme';
+  type GetReportResponse = {
+    "singleDigitKonto": TableScheme[],
+    "doubleDigitKonto": TableScheme[],
+    "tripleDigitKonto": TableScheme[]
+  }
   
   let reportNames: string[] = [];
   let selectedReport: string | null = null;
-  let reportData: TableScheme[] = []
+  let reportData: GetReportResponse = {
+      singleDigitKonto: [],
+      doubleDigitKonto: [],
+      tripleDigitKonto: []
+  }
+
 
   onMount(async () => {
     reportNames = await fetchReportNames();
@@ -29,7 +39,6 @@
     try {
       let result = await fetchData(`reports/${name}`)
       reportData = result.report
-      console.log(reportData)
     } catch (error) {
       toastr.error(`Failed to fetch ${name} reports`)
     }
@@ -51,17 +60,19 @@
     </div>
   
     <!-- Display selected report -->
-    {#if selectedReport}
-      <div class="selected-report">
-        <h2>Selected Report: {selectedReport}</h2>
-        <TableViewer processedData={reportData} fileName={selectedReport}/>
-      </div>
-    {/if}
+    {#each Object.values(reportData) as dataArray}   
+      {#if selectedReport}
+        <div class="selected-report">
+          <h2>Selected Report: {selectedReport}</h2>
+          <TableViewer processedData={dataArray} fileName={selectedReport}/>
+        </div>
+      {/if}
+    {/each}
   </div>
   
   <style>
     .reports-container {
-      max-width: 800px;
+      max-width: 100%;
       margin: auto;
       padding: 20px;
     }

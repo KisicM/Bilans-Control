@@ -6,6 +6,7 @@
     export let processedData: Record<string, any[]> = {};
     export let data: Map<string, TableScheme> = new Map();
     export let fileName: string = ""
+    export let canSave: boolean = false
 
     function handleExport() {
         const dataArray = Array.from(data.values());
@@ -83,9 +84,11 @@
     <button style="color: white; background-color:green" on:click={handleExport}>
         Export to Excel
     </button>
-    <button style="color: white; background-color:blue" on:click={handleClick}>
-        Save report
-    </button>
+    {#if canSave}
+      <button style={"color: white; background-color:blue"} on:click={handleClick} disabled={!canSave}>
+          Save report
+      </button>
+    {/if}
   </div>
   <div style="overflow: auto;">
   {#if data.size > 0}
